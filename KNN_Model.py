@@ -137,7 +137,12 @@ with tab2:
 
     input_data = []
     for feature in selected_features:
-        value = st.radio(f"{feature}", [0, 1], horizontal=True)
+        if feature.upper() == "AGE":
+            # Age input as a number slider
+            value = st.slider(f"{feature} (Umur)", min_value=1, max_value=120, value=50, step=1)
+        else:
+            # Other features as 0/1 radio buttons
+            value = st.radio(f"{feature}", [0, 1], horizontal=True)
         input_data.append(value)
 
     if st.button("Prediksi"):
