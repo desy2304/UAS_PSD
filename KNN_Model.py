@@ -138,10 +138,18 @@ with tab2:
     input_data = []
     for feature in selected_features:
         if feature.upper() == "AGE":
-            # Age input as a number slider
-            value = st.slider(f"{feature} (Umur)", min_value=1, max_value=120, value=50, step=1)
+            # Special handling for AGE: numeric input instead of 0/1
+            min_age = int(df["AGE"].min()) if "AGE" in df.columns else 18
+            max_age = int(df["AGE"].max()) if "AGE" in df.columns else 100
+            value = st.number_input(
+                f"{feature} (tahun)", 
+                min_value=min_age, 
+                max_value=max_age, 
+                value=50,
+                step=1
+            )
         else:
-            # Other features as 0/1 radio buttons
+            # Other features: 0/1 radio buttons
             value = st.radio(f"{feature}", [0, 1], horizontal=True)
         input_data.append(value)
 
