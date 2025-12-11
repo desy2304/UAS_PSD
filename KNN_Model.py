@@ -7,12 +7,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
-try:
-    from imblearn.over_sampling import SMOTE
-    IMBLEARN_AVAILABLE = True
-except Exception:
-    IMBLEARN_AVAILABLE = False
-    SMOTE = None
+from imblearn.over_sampling import SMOTE
 
 # ======================
 # UI SETTINGS
@@ -84,32 +79,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # SMOTE
-if IMBLEARN_AVAILABLE:
-    sm = SMOTE(random_state=42)
-    X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
-else:
-    # Fallback: simple upsampling using sklearn.utils.resample
-    from sklearn.utils import resample
-
-    X_train_df = pd.DataFrame(X_train)
-    y_train_ser = pd.Series(y_train).reset_index(drop=True)
-    df_train = pd.concat([X_train_df, y_train_ser.rename('target')], axis=1)
-
-    # find the maximum class count
-    max_count = df_train['target'].value_counts().max()
-
-    resampled_parts = []
-    for cls, group in df_train.groupby('target'):
-        if len(group) < max_count:
-            resampled = resample(group, replace=True, n_samples=max_count, random_state=42)
-        else:
-            resampled = group
-        resampled_parts.append(resampled)
-
-    df_resampled = pd.concat(resampled_parts).sample(frac=1, random_state=42).reset_index(drop=True)
-
-    y_train_res = df_resampled['target'].values
-    X_train_res = df_resampled.drop(columns=['target']).values
+sm = SMOTE(random_state=42)
+X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
 
 # ======================
 # Train Model
@@ -137,20 +108,7 @@ with tab2:
 
     input_data = []
     for feature in selected_features:
-        if feature.upper() == "AGE":
-            # Special handling for AGE: numeric input instead of 0/1
-            min_age = int(df["AGE"].min()) if "AGE" in df.columns else 18
-            max_age = int(df["AGE"].max()) if "AGE" in df.columns else 100
-            value = st.number_input(
-                f"{feature} (tahun)", 
-                min_value=min_age, 
-                max_value=max_age, 
-                value=50,
-                step=1
-            )
-        else:
-            # Other features: 0/1 radio buttons
-            value = st.radio(f"{feature}", [0, 1], horizontal=True)
+        value = st.radio(f"{feature}", [0, 1], horizontal=True)
         input_data.append(value)
 
     if st.button("Prediksi"):
