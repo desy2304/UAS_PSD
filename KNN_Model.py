@@ -151,8 +151,8 @@ with tab2:
                 step=1
             )
         else:
-            # Fitur lain: radio buttons 0/1
-            value = st.radio(f"{feature}", [0, 1], horizontal=True)
+            # Fitur lain: radio buttons 1/2 (sesuai data asli)
+            value = st.radio(f"{feature}", [1, 2], horizontal=True)
         input_data.append(value)
 
     if st.button("Prediksi"):
