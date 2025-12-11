@@ -139,7 +139,20 @@ with tab2:
 
     input_data = []
     for feature in selected_features:
-        value = st.radio(f"{feature}", [0, 1], horizontal=True)
+        if feature.upper() == "AGE":
+            # Input manual untuk AGE: number input
+            min_age = int(df["AGE"].min()) if "AGE" in df.columns else 18
+            max_age = int(df["AGE"].max()) if "AGE" in df.columns else 100
+            value = st.number_input(
+                f"{feature} (tahun)", 
+                min_value=min_age, 
+                max_value=max_age, 
+                value=50,
+                step=1
+            )
+        else:
+            # Fitur lain: radio buttons 0/1
+            value = st.radio(f"{feature}", [0, 1], horizontal=True)
         input_data.append(value)
 
     if st.button("Prediksi"):
